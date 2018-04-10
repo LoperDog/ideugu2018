@@ -1,2 +1,2 @@
-# ideugu2018
-제작기법
+# SoftRenderer
+소프트렌더러 제작용 템플릿
