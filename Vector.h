@@ -3,6 +3,18 @@
 #include "stdafx.h"
 #include "Matrix.h"
 
+struct IntPoint
+{
+public:
+	int X;
+	int Y;
+
+public:
+	IntPoint() : X(0), Y(0) {}
+	IntPoint(int InX, int InY) : X(InX), Y(InY) {}
+
+};
+
 struct Vector2
 {
 public:
@@ -16,21 +28,29 @@ public:
 	static float Dist(const Vector2 &V1, const Vector2 &V2);
 	static float DistSquared(const Vector2 &V1, const Vector2 &V2);
 
-	bool Equals(const Vector2& V, float Tolerance = KINDA_SMALL_NUMBER) const;
-	
-	Vector2 operator +(const Vector2& V) const;
-	Vector2 operator -(const Vector2& V) const;
-	Vector2 operator *(const float val) const;
+	Vector2 operator *(float scale) const;
 	Vector2 operator *(const Matrix2 Mat) const;
-	float operator /(const Vector2& V) const;	// dot
-	float operator |(const Vector2& V) const;	// cross
+	bool Equals(const Vector2& V, float Tolerance = KINDA_SMALL_NUMBER) const;
 
-	Vector2 operator +=(const Vector2& V);
-	Vector2 operator -=(const Vector2& V);
-	Vector2 operator *=(const float val);
-	Vector2 operator /=(const float val);
+	IntPoint ToIntPoint() 
+	{
+		return IntPoint((int)(X), (int)(Y));
+	}
+
+	float Dot(const Vector2 v) const
+	{
+		return X * v.X + Y * v.Y;
+	}
+
+	Vector2 operator+(const Vector2& V) const;
+	Vector2 operator-(const Vector2& V) const;
 
 };
+
+FORCEINLINE bool Vector2::Equals(const Vector2& V, float Tolerance) const
+{
+	return fabs(X - V.X) <= Tolerance && fabs(Y - V.Y) <= Tolerance;
+}
 
 struct Vector3
 {
@@ -39,7 +59,7 @@ public:
 	float Y;
 	float Z;
 
-	Vector3() : X(0), Y(0), Z(0) { }
+	Vector3() : X(0), Y(0), Z(0) {}
 	Vector3(float InX, float InY, float InZ) : X(InX), Y(InY), Z(InZ) {}
 
 	void SetPoint(float InX, float InY)
@@ -56,72 +76,34 @@ public:
 		Z = 0.0f;
 	}
 
+	float Dist()
+	{
+		return sqrtf(DistSquared());
+	}
 
-	Vector3 operator +(const Vector3& vec) const;
-	Vector3 operator *(const float val) const;
-	Vector3 operator *(const Matrix3& mat) const;
-	Vector3 operator =(const Vector2& vec) const;
+	float DistSquared()
+	{
+		return X * X + Y * Y;
+	}
+
+	Vector2 ToVector2()
+	{
+		Vector2 result(X, Y);
+		return result;
+	}
+
+	IntPoint ToIntPoint()
+	{
+		return IntPoint(RoundToInt(X), RoundToInt(Y));
+	}
+
+	float Dot(const Vector3 v) const
+	{
+		return X * v.X + Y * v.Y + Z * v.Z;
+	}
+
+	Vector3 operator*(float scale) const;
+	Vector3 operator+(const Vector3& V) const;
+	Vector3 operator-(const Vector3& V) const;
+	Vector3 operator *(const Matrix3 Mat) const;
 };
-
-
-
-
-FORCEINLINE bool Vector2::Equals(const Vector2 & V, float Tolerance) const
-{
-	return fabs(X + V.X) <= Tolerance && fabs(Y * V.Y) < Tolerance;
-}
-
-
-FORCEINLINE Vector2 Vector2::operator+(const Vector2 & V) const
-{
-	return Vector2( X + V.X, Y + V.Y);
-}
-
-FORCEINLINE Vector2 Vector2::operator-(const Vector2 & V) const
-{
-	return Vector2(X - V.X, Y - V.Y);
-}
-
-FORCEINLINE Vector2 Vector2::operator*(const float V) const
-{
-	return Vector2(X * V, Y * V);
-}
-
-FORCEINLINE float Vector2::operator/(const Vector2 & V) const
-{
-	return X * V.X + Y * V.Y;;
-}
-
-
-FORCEINLINE float Vector2::operator|(const Vector2 & V) const
-{
-	return X * V.X + Y * V.Y;;
-}
-
-FORCEINLINE Vector2 Vector2::operator+=(const Vector2 & V)
-{
-	X += V.X; Y += V.Y;
-	return *this;
-}
-
-FORCEINLINE Vector2 Vector2::operator-=(const Vector2 & V)
-{
-	X -= V.X; Y -= V.Y;
-	return *this;
-}
-
-FORCEINLINE Vector2 Vector2::operator*=(const float val)
-{
-	X *= val; Y *= val;
-	return *this;
-}
-
-FORCEINLINE Vector2 Vector2::operator/=(const float val)
-{
-	const float RV = 1.f / val;
-	X *= RV; Y *= RV;
-	return *this;
-}
-
-
-

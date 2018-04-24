@@ -1,3 +1,4 @@
+
 #include "stdafx.h"
 #include "Vector.h"
 
@@ -11,6 +12,15 @@ float Vector2::DistSquared(const Vector2 &V1, const Vector2 &V2)
 	return (V2.X - V1.X) * (V2.X - V1.X) + (V2.Y - V1.Y) * (V2.Y - V1.Y);
 }
 
+Vector2 Vector2::operator *(float scale) const
+{
+	Vector2 result;
+	result.X = X * scale;
+	result.Y = Y * scale;
+	return result;
+}
+
+
 Vector2 Vector2::operator*(Matrix2 Mat) const
 {
 	Vector2 result;
@@ -19,31 +29,55 @@ Vector2 Vector2::operator*(Matrix2 Mat) const
 	return result;
 }
 
-
-Vector3 Vector3::operator+(const Vector3& vec) const
+Vector2 Vector2::operator-(const Vector2& V) const
 {
-	return Vector3((X + vec.X), (Y + vec.Y), (Z + vec.Z));
+	Vector2 result;
+	result.X = X - V.X;
+	result.Y = Y - V.Y;
+	return result;
 }
 
-Vector3 Vector3::operator*(const float val) const
+Vector2 Vector2::operator+(const Vector2& V) const
 {
+	Vector2 result;
+	result.X = X + V.X;
+	result.Y = Y + V.Y;
+	return result;
+}
 
-	return Vector3(X * val, Y * val, Z * val);
+Vector3 Vector3::operator*(float scale) const
+{
+	Vector3 result;
+	result.X = X * scale;
+	result.Y = Y * scale;
+	result.Z = Z * scale;
+	return result;
+}
+
+Vector3 Vector3::operator-(const Vector3& V) const
+{
+	Vector3 result;
+	result.X = X - V.X;
+	result.Y = Y - V.Y;
+	result.Z = Z - V.Z;
+	return result;
 }
 
 
-
-Vector3 Vector3::operator*(const Matrix3 & mat) const
+Vector3 Vector3::operator+(const Vector3& V) const
 {
-	return Vector3(
-		(mat._11 * X + mat._12 * X + mat._13 * X),
-		(mat._21 * Y + mat._22 * Y + mat._23 * Y),
-		(mat._31 * Z + mat._32 * Z + mat._33 * Z)
-	);
-
+	Vector3 result;
+	result.X = X + V.X;
+	result.Y = Y + V.Y;
+	result.Z = Z + V.Z;
+	return result;
 }
 
-Vector3 Vector3::operator=(const Vector2& vec) const
+Vector3 Vector3::operator*(Matrix3 Mat) const
 {
-	return Vector3(vec.X, vec.Y, 1.0f);
+	Vector3 result;
+	result.X = X * Mat._11 + Y * Mat._12 + Z * Mat._13;
+	result.Y = X * Mat._21 + Y * Mat._22 + Z * Mat._23;
+	result.Z = X * Mat._31 + Y * Mat._32 + Z * Mat._33;
+	return result;
 }

@@ -17,9 +17,9 @@ void BufferSwap()
 	BitBlt(hScreenDC, 0, 0, g_nClientWidth, g_nClientHeight, hMemoryDC, 0, 0, SRCCOPY);
 }
 
-void SetColor(BYTE r, BYTE g, BYTE b)
+void SetColor(BYTE r, BYTE g, BYTE b, BYTE a)
 {
-	g_CurrentColor = RGB(b, g, r);
+	g_CurrentColor = RGBA32(r, g, b, a);
 }
 
 void Clear()
