@@ -1,23 +1,29 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Vector.h"
+#include "Vertex.h"
 
-struct Vertex
+
+struct APPDATA_CUSTOM
 {
-public:
-	Vertex() {}
-	Vertex(Vector3 v) { position = v; }
+	APPDATA_CUSTOM() {}
 	Vector3 position;
-	ULONG color;
 	Vector2 uv;
+	ULONG color;
+};
+
+struct V2F_CUSTOM
+{
+	Vector3 position;
+	Vector2 uv;
+	ULONG color;
 };
 
 struct Triangle
 {
 public:
 	Triangle() {}
-	Triangle(Vertex vert1, Vertex vert2, Vertex vert3)
+	Triangle( V2F_CUSTOM vert1, V2F_CUSTOM vert2, V2F_CUSTOM vert3)
 	{
 		vt[0] = vert1;
 		vt[1] = vert2;
@@ -48,7 +54,7 @@ public:
 		Max.Y = RoundToInt(sbbMax.Y);
 	}
 
-	Vertex vt[3];
+	V2F_CUSTOM vt[3];
 
 	Vector2 u;
 	Vector2 v;
@@ -74,7 +80,23 @@ public:
 		return true;
 	}
 
-	ULONG GetPixelColor(Vector3 target, float s, float t)
+	Vector3 GetFragmentPos ( Vector3 target, float s, float t )
+	{
+		Vector3 Pos0 = vt [ 0 ].position;
+		Vector3 Pos0ToPos1 = vt [ 1 ].position - vt [ 0 ].position;
+		Vector3 Pos0ToPos2 = vt [ 2 ].position - vt [ 0 ].position;
+		return Pos0 + Pos0ToPos1 * s + Pos0ToPos2 * t;
+	}
+
+	Vector2 GetFragmentUV ( Vector3 target, float s, float t )
+	{
+			Vector2 UV0 = vt[0].uv;
+			Vector2 UV0ToUV1 = vt[1].uv - vt[0].uv;
+			Vector2 UV0ToUV2 = vt[2].uv - vt[0].uv;
+			return UV0 + UV0ToUV1 * s + UV0ToUV2 * t;
+	}
+
+	ULONG GetFragmentColor(Vector3 target, float s, float t)
 	{
 		BYTE RV0 = GetRValue(vt[0].color);
 		BYTE RV1 = GetRValue(vt[1].color);
@@ -96,36 +118,3 @@ public:
 
 };
 
-struct Mesh {
-public:
-	Vertex vertex[4];
-	int index[6];
-
-	Mesh() {}
-	Mesh(Vertex* ver) {
-		vertex[0] = ver[0];
-		vertex[1] = ver[1];
-		vertex[2] = ver[2];
-		vertex[3] = ver[3];
-
-		index[0] = 0;
-		index[1] = 1;
-		index[2] = 2;
-		index[3] = 3;
-		index[4] = 2;
-		index[5] = 1;
-	}
-	Mesh(Vertex leftTop, Vertex rightTop, Vertex leftBottom, Vertex rightBottom) {
-		vertex[0] = leftTop;
-		vertex[1] = rightTop;
-		vertex[2] = leftBottom;
-		vertex[3] = rightBottom;
-
-		index[0] = 0;
-		index[1] = 1;
-		index[2] = 2;
-		index[3] = 3;
-		index[4] = 2;
-		index[5] = 1;
-	}
-};

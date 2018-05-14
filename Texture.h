@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Triangle.h"
+#include "Vector.h"
 
 class Texture
 {
@@ -13,7 +13,8 @@ public:
 
 	bool LoadBMP(char* filename);
 	ULONG GetPixel(int x, int y);
-	ULONG GetTexturePixel(float s, float t, const Triangle& tri);
+	//ULONG GetTexturePixel(float s, float t, const Triangle& tri);
+	ULONG TextureSample ( Vector2 TexCoord, float s, float t );
 
 	int width;
 	int height;		

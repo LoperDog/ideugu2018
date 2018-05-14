@@ -28,6 +28,9 @@
     <Filter Include="Image">
       <UniqueIdentifier>{131d3109-725d-4580-9039-1dc9983522cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Geometry">
+      <UniqueIdentifier>{7881b58a-e64a-47cc-8718-197c16a6f88f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -54,14 +57,20 @@
     <ClInclude Include="SoftRenderer.h">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="Triangle.h">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="Bmp.h">
       <Filter>Image</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Image</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -83,14 +92,20 @@
     <ClCompile Include="SoftRenderer.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="Triangle.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="Bmp.cpp">
       <Filter>Image</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Image</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Triangle.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

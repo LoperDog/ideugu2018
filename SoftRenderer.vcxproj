@@ -22,7 +22,7 @@
     <ProjectGuid>{E665C6F1-56E1-4A3F-A41F-2B46CB07714C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SoftRenderer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -145,6 +145,7 @@
     <ClInclude Include="Bmp.h" />
     <ClInclude Include="GDIHelper.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SoftRenderer.h" />
@@ -153,11 +154,13 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vector.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bmp.cpp" />
     <ClCompile Include="GDIHelper.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SoftRenderer.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -169,6 +172,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="Vector.cpp" />
+    <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SoftRenderer.rc" />

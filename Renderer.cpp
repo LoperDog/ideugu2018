@@ -25,63 +25,167 @@ void PutPixel(IntPoint pt)
 	*(dest + offset) = g_CurrentColor;
 }
 
-void DrawLine(const Vector3& start, const Vector3& end)
+void DrawCall (Mesh * MeshToDraw)
 {
-	float length = (end - start).Dist();
-	float inc = 1.0f / length;
+	V2F_CUSTOM* v2f = new V2F_CUSTOM [ MeshToDraw->VSize ];
 
-	int maxLength = RoundToInt(length);
-	for (int i = 0; i <= maxLength; i++)
+	for ( int i = 0; i < MeshToDraw->VSize; i ++ )
 	{
-		float t = inc * i;
-		if (t >= length) t = 1.0f;
-		Vector3 Pt = start * (1.0f - t) + end * t;
-		PutPixel(Pt.ToIntPoint());
+		Vertex v = MeshToDraw->Vertices [ i ];
+		APPDATA_CUSTOM vdata;
+		vdata.position = v.position;
+		vdata.color = v.color;
+		vdata.uv = v.uv;
+		v2f[i] = VertexShader ( vdata );
 	}
-}
 
-void Draw2DTriangle(Triangle t)
-{
-	for (int y = t.Min.Y; y <= t.Max.Y; y++)
+	for ( int i = 0; i < MeshToDraw->ISize; i+=3 )
 	{
-		for (int x = t.Min.X; x <= t.Max.X; x++)
-		{
-			Vector3 target((float)x + 0.5f, (float)y + 0.5f, 0.0f);
-			float outS, outT;
-			t.CalcBaryCentricCoord(target, &outS, &outT);
-			if (t.IsInTrianble(outS, outT))
-			{
-				if (g_Texture->IsLoaded())
-				{
-					g_CurrentColor = g_Texture->GetTexturePixel(outS, outT, t);
-				}
-				else
-				{
-					g_CurrentColor = t.GetPixelColor(target, outS, outT);
-				}
+		Triangle t ( v2f [ MeshToDraw->Indices [ i ]],
+			v2f [ MeshToDraw->Indices [ i+1 ]],
+			v2f [ MeshToDraw->Indices [ i+2 ]] );
 
-				PutPixel(IntPoint(x, y));
-			}			
+		// Rasterization
+		for ( int y = t.Min.Y; y <= t.Max.Y; y++ )
+		{
+			for ( int x = t.Min.X; x <= t.Max.X; x++ )
+			{
+				Vector3 target ( ( float ) x + 0.5f, ( float ) y + 0.5f, 0.0f );
+				float outS, outT;
+				t.CalcBaryCentricCoord ( target, &outS, &outT );
+				if ( t.IsInTrianble ( outS, outT ) )
+				{
+					V2F_CUSTOM v2f;
+					v2f.position = t.GetFragmentPos ( target, outS, outT );
+					v2f.color = t.GetFragmentColor ( target, outS, outT );
+					v2f.uv = t.GetFragmentUV ( target, outS, outT );
+					ULONG finalColor = FragmentShader ( v2f, outS, outT );
+					g_CurrentColor = finalColor;
+					PutPixel ( IntPoint(x, y) );
+				}
+			}
 		}
 	}
+
+	if ( NULL != v2f )
+	{
+		delete [ ] v2f;
+	}
 }
 
-void Draw2DMesh(Mesh m) {
-	Triangle t1(m.vertex[m.index[0]], m.vertex[m.index[1]], m.vertex[m.index[2]]);
-	Triangle t2(m.vertex[m.index[3]], m.vertex[m.index[4]], m.vertex[m.index[5]]);
+static Mesh* m = new Mesh();
 
-	Draw2DTriangle(t1);
-	Draw2DTriangle(t2);
+Matrix3 TMat, RMat, SMat, TRSMat;
+
+V2F_CUSTOM VertexShader ( APPDATA_CUSTOM in )
+{
+  V2F_CUSTOM returndata;
+  returndata.position = in.position * TRSMat;
+  returndata.color = in.color;
+  returndata.uv = in.uv;
+	//return V2F_CUSTOM ( );
+  return returndata;
 }
 
-void UpdateFrame(void)
+ULONG FragmentShader (V2F_CUSTOM in, float s, float t )
+{
+	// Texture에서 색상 빼오기..
+	if ( g_Texture->IsLoaded ( ) )
+	{
+		return g_Texture->TextureSample ( in.uv, s, t );
+	}
+
+	return in.color;
+}
+
+//void DrawLine(const Vector3& start, const Vector3& end)
+//{
+//	float length = (end - start).Dist();
+//	float inc = 1.0f / length;
+//
+//	int maxLength = RoundToInt(length);
+//	for (int i = 0; i <= maxLength; i++)
+//	{
+//		float t = inc * i;
+//		if (t >= length) t = 1.0f;
+//		Vector3 Pt = start * (1.0f - t) + end * t;
+//		PutPixel(Pt.ToIntPoint());
+//	}
+//}
+
+//void Draw2DTriangle(Triangle t)
+//{
+//	for (int y = t.Min.Y; y <= t.Max.Y; y++)
+//	{
+//		for (int x = t.Min.X; x <= t.Max.X; x++)
+//		{
+//			Vector3 target((float)x + 0.5f, (float)y + 0.5f, 0.0f);
+//			float outS, outT;
+//			t.CalcBaryCentricCoord(target, &outS, &outT);
+//			if (t.IsInTrianble(outS, outT))
+//			{
+//				if (g_Texture->IsLoaded())
+//				{
+//					g_CurrentColor = g_Texture->GetTexturePixel(outS, outT, t);
+//				}
+//				else
+//				{
+//					g_CurrentColor = t.GetPixelColor(target, outS, outT);
+//				}
+//
+//				PutPixel(IntPoint(x, y));
+//			}			
+//		}
+//	}
+//}
+
+void InitFrame (void)
+{
+
+  Vector3 Pt1, Pt2, Pt3, Pt4;
+
+  Pt1.SetPoint(-150, 150.0f);
+  Pt2.SetPoint(150.0f, 150.0f);
+  Pt3.SetPoint(150.0f, -150.0f);
+  Pt4.SetPoint(-150.0f, -150.0f);
+
+
+
+  static Vertex * v = new Vertex[4]();
+  v[0].position = Pt1;
+  v[0].color = RGB32(255, 0, 0);
+  v[0].uv = Vector2(0.125f, 0.125f);
+
+  v[1].position = Pt2;
+  v[1].color = RGB32(0, 255, 0);
+  v[1].uv = Vector2(0.25f, 0.125f);
+  
+  v[2].position = Pt3;
+  v[2].color = RGB32(0, 0, 255);
+  v[2].uv = Vector2(0.25f, 0.25f);
+
+  v[3].position = Pt4;
+  v[3].color = RGB32(255, 255, 255);
+  v[3].uv = Vector2(0.125f, 0.25f);
+
+  static int * index = new int[6];
+  index[0] = 0;
+  index[1] = 1;
+  index[2] = 2;
+
+  index[3] = 0;
+  index[4] = 3;
+  index[5] = 2;
+
+  m->SetVertetices(v, 4);
+  m->SetIndices(index, 6);
+}
+
+void UpdateFrame (void)
 {
 	// Buffer Clear
 	SetColor(32, 128, 255);
 	Clear();
-
-	// Draw
-	Vector3 Pt1, Pt2, Pt3, Pt4;
 
 	static float offsetX = 0.0f;
 	static float angle = 0.0f;
@@ -94,43 +198,14 @@ void UpdateFrame(void)
 	if (GetAsyncKeyState(VK_PRIOR)) scale *= 1.01f;
 	if (GetAsyncKeyState(VK_NEXT)) scale *= 0.99f;
 
-	Matrix3 TMat, RMat, SMat;
+
 	TMat.SetTranslation(offsetX, 0.0f);
 	RMat.SetRotation(angle);
 	SMat.SetScale(scale);
-	Matrix3 TRSMat = TMat * RMat * SMat;
 
-	Pt1.SetPoint(-150, 150.0f);
-	Pt2.SetPoint(150.0f, 150.0f);
-	Pt3.SetPoint(150.0f, -150.0f);
-	Pt4.SetPoint(-150.0f, -150.0f);
+	TRSMat = TMat * RMat * SMat;
 
-	Vertex v1(Pt1 * TRSMat);
-	v1.color = RGB32(255, 0, 0);
-	//v1.uv = Vector2(0.0f, 0.0f);
-	v1.uv = Vector2(0.125f, 0.125f);
-	Vertex v2(Pt2 * TRSMat);
-	v2.color = RGB32(0, 255, 0);
-	//v2.uv = Vector2(1.0f, 0.0f);
-	v2.uv = Vector2(0.25f, 0.125f);
-	Vertex v3(Pt3 * TRSMat);
-	v3.color = RGB32(0, 0, 255);
-	//v3.uv = Vector2(1.0f, 1.0f);
-	v3.uv = Vector2(0.25f, 0.25f);
-	Triangle T1(v1, v2, v3);
-
-	Vertex v4(Pt4 * TRSMat);
-	v4.color = RGB32(255, 255, 0);
-	//v4.uv = Vector2(0.0f, 1.0f);
-	v4.uv = Vector2(0.125f, 0.25f);
-	Triangle T2(v1, v4, v3);
-
-	Mesh m(v1, v2, v4, v3);
-
-	//Draw2DTriangle(T1);
-	//Draw2DTriangle(T2);
-	Draw2DMesh(m);
-
+	DrawCall ( m );
 	// Buffer Swap 
 	BufferSwap();
 }
