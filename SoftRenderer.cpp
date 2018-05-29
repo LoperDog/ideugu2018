@@ -191,7 +191,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 int MsgLoop(HACCEL hAccelTable)
 {
 	MSG msg;
-  InitFrame();
+
 	// 기본 메시지 루프입니다.
 	while (true)
 	{

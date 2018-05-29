@@ -3,18 +3,17 @@
 #include "stdafx.h"
 #include "Vertex.h"
 
-class Mesh
+struct Mesh
 {
-public:
-	Mesh() : Vertices(NULL), Indices(NULL), ISize(0), VSize(0) { }
+	Mesh() : Vertices(NULL), Indices(NULL), VSize(0), ISize(0) {} ;
+	//~Mesh();
+	//void SetVertices(Vertex* NewVertices, size_t NewSize);
+	//void SetIndices(int* NewIndices, size_t NewSize);
+	bool IsInitialized() { return ((NULL != Vertices) && (NULL != Indices) && (ISize % 3 == 0)); }
 
-	~Mesh ();
-	void SetVertetices (Vertex* NewVertices, size_t NewSize);
-	void SetIndices (int* NewIndices, size_t NewSize);
+	Vertex* Vertices;
+	size_t VSize;
 
-	Vertex * Vertices;
 	int* Indices;
-
-	int ISize;
-	int VSize;
+	size_t ISize;
 };

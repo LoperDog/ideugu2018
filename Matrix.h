@@ -93,5 +93,20 @@ public:
 		_22 = _11;
 	}
 
+	void Tranpose()
+	{
+		float temp = _12;
+		_12 = _21;
+		_21 = temp;
+
+		temp = _13;
+		_13 = _31;
+		_31 = temp;
+
+		temp = _23;
+		_23 = _32;
+		_32 = temp;
+	}
+
 	Matrix3 operator *(const Matrix3 Other) const;
 };

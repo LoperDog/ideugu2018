@@ -1,20 +1,23 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Vertex.h"
+#include "Vector.h"
 
-
-struct APPDATA_CUSTOM
+struct VertInOut
 {
-	APPDATA_CUSTOM() {}
+	VertInOut() {}
+	VertInOut(Vector3 v, Vector2 u, ULONG c) : position(v), uv(u), color(c) {};
+
 	Vector3 position;
 	Vector2 uv;
 	ULONG color;
 };
 
-struct V2F_CUSTOM
+struct FragIn
 {
-	Vector3 position;
+	FragIn() {};
+	FragIn(Vector2 u, ULONG c) : uv(u), color(c) {};
+
 	Vector2 uv;
 	ULONG color;
 };
@@ -23,11 +26,11 @@ struct Triangle
 {
 public:
 	Triangle() {}
-	Triangle( V2F_CUSTOM vert1, V2F_CUSTOM vert2, V2F_CUSTOM vert3)
+	Triangle(VertInOut v1, VertInOut v2, VertInOut v3)
 	{
-		vt[0] = vert1;
-		vt[1] = vert2;
-		vt[2] = vert3;
+		vt[0] = v1;
+		vt[1] = v2;
+		vt[2] = v3;
 
 		Vector2 sbbMin = Vector2(INFINITY, INFINITY);
 		Vector2 sbbMax = Vector2(-INFINITY, -INFINITY);
@@ -54,18 +57,9 @@ public:
 		Max.Y = RoundToInt(sbbMax.Y);
 	}
 
-	V2F_CUSTOM vt[3];
-
-	Vector2 u;
-	Vector2 v;
-	IntPoint Min;
-	IntPoint Max;
-	float dotUU, dotUV, dotVV;
-	float invDenom;
-
-	void CalcBaryCentricCoord(Vector3 target, float *outS, float *outT) 
+	void CalcBaryCentricCoord(IntPoint target, float *outS, float *outT)
 	{
-		Vector2 w = (target - vt[0].position).ToVector2();
+		Vector2 w = (Vector3((float)(target.X) + 0.5f, (float)(target.Y) + 0.5f, 0.0f) - vt[0].position).ToVector2();
 		float dotUW = u.Dot(w);
 		float dotVW = v.Dot(w);
 		*outS = (dotVV * dotUW - dotUV * dotVW) * invDenom;
@@ -80,23 +74,31 @@ public:
 		return true;
 	}
 
-	Vector3 GetFragmentPos ( Vector3 target, float s, float t )
+	FragIn GetFragment(float s, float t)
 	{
-		Vector3 Pos0 = vt [ 0 ].position;
-		Vector3 Pos0ToPos1 = vt [ 1 ].position - vt [ 0 ].position;
-		Vector3 Pos0ToPos2 = vt [ 2 ].position - vt [ 0 ].position;
-		return Pos0 + Pos0ToPos1 * s + Pos0ToPos2 * t;
+		FragIn result;
+		result.uv = GetFragUV(s, t);
+		result.color = GetFragVertexColor(s, t);
+		return result;
 	}
 
-	Vector2 GetFragmentUV ( Vector3 target, float s, float t )
+
+public:
+	IntPoint Min;
+	IntPoint Max;
+
+private:
+	Vector2 u;
+	Vector2 v;
+	float dotUU, dotUV, dotVV, invDenom;
+	VertInOut vt[3];
+
+	Vector2 GetFragUV(float s, float t)
 	{
-			Vector2 UV0 = vt[0].uv;
-			Vector2 UV0ToUV1 = vt[1].uv - vt[0].uv;
-			Vector2 UV0ToUV2 = vt[2].uv - vt[0].uv;
-			return UV0 + UV0ToUV1 * s + UV0ToUV2 * t;
+		return vt[0].uv * (1.0f - s - t) + vt[1].uv * s + vt[2].uv * t;
 	}
 
-	ULONG GetFragmentColor(Vector3 target, float s, float t)
+	ULONG GetFragVertexColor(float s, float t)
 	{
 		BYTE RV0 = GetRValue(vt[0].color);
 		BYTE RV1 = GetRValue(vt[1].color);

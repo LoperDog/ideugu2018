@@ -29,7 +29,7 @@
       <UniqueIdentifier>{131d3109-725d-4580-9039-1dc9983522cc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Geometry">
-      <UniqueIdentifier>{7881b58a-e64a-47cc-8718-197c16a6f88f}</UniqueIdentifier>
+      <UniqueIdentifier>{370c9219-8dd6-4aea-af20-3326560aceee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -66,11 +66,11 @@
     <ClInclude Include="Mesh.h">
       <Filter>Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Geometry</Filter>
-    </ClInclude>
     <ClInclude Include="Triangle.h">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -101,11 +101,11 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="Vertex.cpp">
-      <Filter>Geometry</Filter>
-    </ClCompile>
     <ClCompile Include="Triangle.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
